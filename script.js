@@ -200,12 +200,12 @@ window.addEventListener('keydown', (e) => {
     let nums ='0123456789';
     if(nums.includes(key)){
         if(operator === ''){
-            leftOperand+=key;
+            leftOperand==='0'?leftOperand=key:leftOperand+=key;
             displayValue=leftOperand;
             updateDisplay();
         }
         else{
-            rightOperand+=key;
+            rightOperand==='0'?rightOperand=key:rightOperand+=key;
             displayValue=rightOperand;
             updateDisplay();
         }

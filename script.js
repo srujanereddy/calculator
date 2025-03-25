@@ -123,6 +123,7 @@ evaluate.addEventListener("click", () => {
         updateDisplay();
         operator = '';
         rightOperand='0';
+        leftOperand = '0';
     }
     else{
         let result = operation(leftOperand,operator,rightOperand);
@@ -131,6 +132,7 @@ evaluate.addEventListener("click", () => {
         updateDisplay();
         operator='';
         rightOperand='0';
+        leftOperand='0';
     }
 });
 

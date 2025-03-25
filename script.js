@@ -17,8 +17,8 @@ function divide(a,b){
 }
 
 let operator='';
-let leftOperand='';
-let rightOperand='';
+let leftOperand='0';
+let rightOperand='0';
 let displayValue='';
 
 const divider = document.querySelector("#divider");
@@ -39,27 +39,35 @@ function operation(leftOperand,operator,rightOperand){
 }
 
 const display = document.querySelector(".display");
-
 function updateDisplay(){
     if(displayValue.length > 9)
         displayValue = displayValue.substring(0,9);
     display.textContent = displayValue;
 }
 
+const previewDisplay = document.querySelector('.preview');
+function updatePreview(){
+    previewDisplay.textContent = `${leftOperand} ${operator}`;
+}
+function clearPreview(){
+    previewDisplay.textContent = '';
+}
+
 const numbers = document.querySelectorAll(".number");
 numbers.forEach((number) => {
     number.addEventListener("click", () => {
         if(operator === ''){
-            leftOperand+=number.textContent;
+            leftOperand==='0'?leftOperand=number.textContent:leftOperand+=number.textContent;
             displayValue=leftOperand;
             updateDisplay();
             leftOperand = displayValue;
         }
         else{
-            rightOperand+=number.textContent;
+            rightOperand==='0'?rightOperand=number.textContent:rightOperand+=number.textContent;
             displayValue=rightOperand;
             updateDisplay();
             rightOperand = displayValue;
+            disableOperators();
         }
     });
 });
@@ -67,15 +75,13 @@ numbers.forEach((number) => {
 const operators = document.querySelectorAll(".operator");
 operators.forEach((symbol) => {
     symbol.addEventListener("click", () =>{
+        disableOperators();
         if(operator === ''){
             operator = symbol.textContent;
-        }
-        else if(rightOperand === ''){
-            let result = operation(leftOperand,operator,leftOperand);
-            leftOperand = result;
-            displayValue = leftOperand;
+            displayValue = rightOperand;
             updateDisplay();
-            rightOperand='';
+        }
+        else if(rightOperand === '0'){
             operator = symbol.textContent;
         }
         else{
@@ -86,32 +92,37 @@ operators.forEach((symbol) => {
             rightOperand='';
             operator = symbol.textContent;
         }
+        updatePreview();
+        symbol.classList.add('active-operator');
     });
 });
 
 const clear = document.querySelector("#clear");
 clear.addEventListener("click", () => {
-    displayValue='';
+    disableOperators();
+    displayValue='0';
     updateDisplay();
-    leftOperand='';
-    rightOperand='';
+    leftOperand='0';
+    rightOperand='0';
     operator='';
+    clearPreview();
 });
 
 const evaluate = document.querySelector("#evaluate");
 evaluate.addEventListener("click", () => {
+    disableOperators();
+    clearPreview();
     if(operator === ''){
         displayValue = leftOperand;
         updateDisplay();
     }
     else if(rightOperand === ''){
-        let result = operation(leftOperand,operator,leftOperand);
+        let result = operation(leftOperand,operator,'0');
         leftOperand = result;
         displayValue = leftOperand;
         updateDisplay();
         operator = '';
-        rightOperand='';
-        leftOperand='';
+        rightOperand='0';
     }
     else{
         let result = operation(leftOperand,operator,rightOperand);
@@ -119,8 +130,7 @@ evaluate.addEventListener("click", () => {
         displayValue = leftOperand;
         updateDisplay();
         operator='';
-        rightOperand='';
-        leftOperand='';
+        rightOperand='0';
     }
 });
 
@@ -129,6 +139,7 @@ sign.addEventListener("click", () => {
     if(operator === ''){
         if(leftOperand){
             leftOperand = -leftOperand;
+            leftOperand+='';
             displayValue = leftOperand;
             updateDisplay();
         }
@@ -136,6 +147,7 @@ sign.addEventListener("click", () => {
     else{
         if(rightOperand){
             rightOperand = -rightOperand;
+            rightOperand+='';
             displayValue = rightOperand;
             updateDisplay();
         }
@@ -164,11 +176,20 @@ const del = document.querySelector("#delete");
 del.addEventListener("click", () => {
     if(operator === ''){
         leftOperand = leftOperand.substring(0,leftOperand.length - 1);
+        if(leftOperand === '')
+            leftOperand = '0';
         displayValue = leftOperand;
         updateDisplay();
     }
+    else if(rightOperand === '0' && operator){
+        operator='';
+        disableOperators();
+        clearPreview();
+    }
     else{
         rightOperand = rightOperand.substring(0,rightOperand.length - 1);
+        if(rightOperand === '')
+            rightOperand = '0';
         displayValue = rightOperand;
         updateDisplay();
     }
@@ -215,3 +236,9 @@ window.addEventListener('keydown', (e) => {
         }
     }
 });
+
+function disableOperators(){
+    operators.forEach((symbol) => {
+        symbol.classList.remove('active-operator');
+    })
+}
